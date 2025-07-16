@@ -3,57 +3,50 @@ package main
 import "fmt"
 
 func main() {
-	arr := []int{2, 39, 23}
+	arr := []int{1, 2, 1, 1, 2, 1, 2}
 	fmt.Println(maximumLength(arr))
 }
 
 func maximumLength(nums []int) int {
-	if len(nums) <= 2 {
-		return len(nums)
-	}
-
-	evenCount := 0
-	for _, num := range nums {
-		if num%2 == 0 {
+	evenCount, oddCount := 0, 0
+	for _, n := range nums {
+		if n%2 == 0 {
 			evenCount++
-		}
-	}
-
-	oddCount := 0
-	for _, num := range nums {
-		if num%2 != 0 {
+		} else {
 			oddCount++
 		}
 	}
 
-	alt1 := 1
-	alt2 := 1
-	prev1 := nums[0] % 2
-	prev2 := 1 - prev1
+	// Чередование
+	maxAlt1 := alternatingLength(nums, 0) // начиная с чётного
+	maxAlt2 := alternatingLength(nums, 1) // начиная с нечётного
 
-	for i := 1; i < len(nums); i++ {
-		curr := nums[i] % 2
-		if curr != prev1 {
-			alt1++
-			prev1 = curr
+	maxAlt := maxAlt1
+	if maxAlt2 > maxAlt {
+		maxAlt = maxAlt2
+	}
+
+	maxSame := evenCount
+	if oddCount > maxSame {
+		maxSame = oddCount
+	}
+
+	if maxAlt > maxSame {
+		return maxAlt
+	}
+	return maxSame
+}
+
+func alternatingLength(nums []int, startParity int) int {
+	count := 0
+	expected := startParity
+
+	for _, n := range nums {
+		if n%2 == expected {
+			count++
+			expected = 1 - expected
 		}
-		if curr != prev2 {
-			alt2++
-			prev2 = curr
-		}
 	}
 
-	// Return the maximum of all cases
-	maxLen := evenCount
-	if oddCount > maxLen {
-		maxLen = oddCount
-	}
-	if alt1 > maxLen {
-		maxLen = alt1
-	}
-	if alt2 > maxLen {
-		maxLen = alt2
-	}
-
-	return maxLen
+	return count
 }
